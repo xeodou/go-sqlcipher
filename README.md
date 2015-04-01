@@ -53,6 +53,7 @@ FAQ
 
 The golang code is copy from [go-sqlcipher](https://github.com/mattn/go-sqlite3)
 If you have some issue, you can maybe you can find from https://github.com/mattn/go-sqlite3/issues
+
 Here is some help from go-sqlite3 project.
 
 * Can't build go-sqlite3 on windows 64bit.
