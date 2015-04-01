@@ -77,7 +77,7 @@ Here is some help from go-sqlite3 project.
 
 * Print some waring messages like `warning: 'RAND_add' is deprecated: first deprecated in OS X 10.7`
 
-    You can ignore these message.
+    You can ignore these messages.
 
 License
 -------
