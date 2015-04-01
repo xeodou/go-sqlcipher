@@ -1,9 +1,6 @@
 go-sqlcipher
 ==========
 
-Description
------------
-
 SQLCipher driver conforming to the built-in database/sql interface and using the latest sqlite3 code.
 
 which is
