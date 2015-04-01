@@ -4,7 +4,7 @@ go-sqlcipher
 Description
 -----------
 
-SQLCipher driver conforming to the built-in database/sql interface and using the lastest sqlite3 code.
+SQLCipher driver conforming to the built-in database/sql interface and using the latest sqlite3 code.
 
 which is
 `3.8.8.3 2015-02-25 13:29:11 9d6c1880fb75660bbabd693175579529785f8a6b`
