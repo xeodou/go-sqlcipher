@@ -1,5 +1,6 @@
 go-sqlcipher
 ==========
+[![wercker status](https://app.wercker.com/status/644cebafbb8dc7be796f0d45578a9a12/m "wercker status")](https://app.wercker.com/project/bykey/644cebafbb8dc7be796f0d45578a9a12)
 
 SQLCipher driver conforming to the built-in database/sql interface and using the latest sqlite3 code.
 
