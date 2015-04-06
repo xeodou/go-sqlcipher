@@ -4,11 +4,6 @@ box: wercker/golang
 build:
   # The steps that will be executed on build
   steps:
-    # Get the project
-    - script:
-        name: go get
-        code: |
-          go get ./...
     # Lint the project
     - script:
         name: go lint
