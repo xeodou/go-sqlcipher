@@ -1,4 +1,4 @@
-box: google/golang@1.4.0
+box: google/golang
 
 # Build definition
 build:
