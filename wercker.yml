@@ -1,4 +1,4 @@
-box: google/golang
+box: wercker/golang
 
 # Build definition
 build:
