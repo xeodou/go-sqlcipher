@@ -8,7 +8,7 @@ build:
     - script:
         name: go lint
         code: |
-          go lint
+          go get -u github.com/golang/lint/golint && golint
     # Test the project
     - script:
         name: go test
