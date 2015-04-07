@@ -16,7 +16,7 @@ import (
 	"testing"
 	"time"
 
-	"./sqlite3_test"
+	"github.com/xeodou/go-sqlcipher/sqlite3_test"
 )
 
 func TempFilename() string {
@@ -944,4 +944,83 @@ func TestNumberNamedParams(t *testing.T) {
 	if id != 1 || extra != "foo" {
 		t.Error("Failed to db.QueryRow: not matched results")
 	}
+}
+
+func TestEncryptoDatabase(t *testing.T) {
+	tempFilename := TempFilename()
+	db, err := sql.Open("sqlite3", tempFilename)
+	if err != nil {
+		t.Fatal("Failed to open database:", err)
+	}
+	defer os.Remove(tempFilename)
+	defer db.Close()
+
+	_, err = db.Exec("PRAGMA key = password;")
+	if err != nil {
+		t.Error("Failed to set encrypto key")
+	}
+
+	_, err = db.Exec(`
+	create table foo (id integer, name text, extra text);
+	`)
+	if err != nil {
+		t.Error("Failed to call db.Query:", err)
+	}
+
+	_, err = db.Exec(`insert into foo(id, name, extra) values($1, $2, $2)`, 1, "foo")
+	if err != nil {
+		t.Error("Failed to call db.Exec:", err)
+	}
+
+	rows, err := db.Query("select id from foo")
+	if rows == nil {
+		t.Error("Failed to call db.QueryRow")
+	}
+	defer rows.Close()
+	rows.Next()
+	var id int
+	err = rows.Scan(&id)
+	if err != nil {
+		t.Error("Failed to db.Scan:", err)
+	}
+	if id != 1 {
+		t.Error("Failed to db.QueryRow: not matched results")
+	}
+	db.Close()
+	db, err = sql.Open("sqlite3", tempFilename)
+	if err != nil {
+		t.Fatal("Failed to open database:", err)
+	}
+	_, err = db.Exec("PRAGMA key = not_password;")
+	if err != nil {
+		t.Error("Failed to set encrypto key")
+	}
+	rows, err = db.Query("select id from foo")
+	if err == nil {
+		t.Error("Failed to encrypto database")
+	}
+	db.Close()
+	db, err = sql.Open("sqlite3", tempFilename)
+	if err != nil {
+		t.Fatal("Failed to open database:", err)
+	}
+	_, err = db.Exec("PRAGMA key = password;")
+	if err != nil {
+		t.Error("Failed to set encrypto key")
+	}
+	rows, err = db.Query("select id from foo")
+	if rows == nil || err != nil {
+		t.Error("Failed to call db.Query")
+	}
+	defer rows.Close()
+	rows.Next()
+	var id2 int
+	err = rows.Scan(&id2)
+	if err != nil {
+		t.Error("Failed to db.Scan:", err)
+	}
+	if id2 != 1 {
+		t.Error("Failed to db.QueryRow: not matched results")
+	}
+
 }
