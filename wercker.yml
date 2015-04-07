@@ -11,6 +11,11 @@ build:
           go get -u github.com/golang/lint/golint && golint
     # Test the project
     - script:
+        name: go get
+        code: |
+          go get ./...
+    # Test the project
+    - script:
         name: go test
         code: |
           go test
