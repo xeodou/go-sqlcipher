@@ -25,4 +25,4 @@ build:
     - script:
         name: echo golang information
         code: |
-          echo "go version $(go -v) running"
+          echo "$(go version) running"
