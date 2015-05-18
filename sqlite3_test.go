@@ -8,7 +8,10 @@ package sqlite3
 import (
 	"crypto/rand"
 	"database/sql"
+	"database/sql/driver"
 	"encoding/hex"
+	"errors"
+	"fmt"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -25,11 +28,17 @@ func TempFilename() string {
 	return filepath.Join(os.TempDir(), "foo"+hex.EncodeToString(randBytes)+".db")
 }
 
-func TestOpen(t *testing.T) {
+func doTestOpen(t *testing.T, option string) (string, error) {
+	var url string
 	tempFilename := TempFilename()
-	db, err := sql.Open("sqlite3", tempFilename)
+	if option != "" {
+		url = tempFilename + option
+	} else {
+		url = tempFilename
+	}
+	db, err := sql.Open("sqlite3", url)
 	if err != nil {
-		t.Fatal("Failed to open database:", err)
+		return "Failed to open database:", err
 	}
 	defer os.Remove(tempFilename)
 	defer db.Close()
@@ -37,11 +46,38 @@ func TestOpen(t *testing.T) {
 	_, err = db.Exec("drop table foo")
 	_, err = db.Exec("create table foo (id integer)")
 	if err != nil {
-		t.Fatal("Failed to create table:", err)
+		return "Failed to create table:", err
 	}
 
 	if stat, err := os.Stat(tempFilename); err != nil || stat.IsDir() {
-		t.Error("Failed to create ./foo.db")
+		return "Failed to create ./foo.db", nil
+	}
+
+	return "", nil
+}
+
+func TestOpen(t *testing.T) {
+	cases := map[string]bool{
+		"":                   true,
+		"?_txlock=immediate": true,
+		"?_txlock=deferred":  true,
+		"?_txlock=exclusive": true,
+		"?_txlock=bogus":     false,
+	}
+	for option, expectedPass := range cases {
+		result, err := doTestOpen(t, option)
+		if result == "" {
+			if !expectedPass {
+				errmsg := fmt.Sprintf("_txlock error not caught at dbOpen with option: %s", option)
+				t.Fatal(errmsg)
+			}
+		} else if expectedPass {
+			if err == nil {
+				t.Fatal(result)
+			} else {
+				t.Fatal(result, err)
+			}
+		}
 	}
 }
 
@@ -1023,4 +1059,79 @@ func TestEncryptoDatabase(t *testing.T) {
 		t.Error("Failed to db.QueryRow: not matched results")
 	}
 
+}
+
+func TestStringContainingZero(t *testing.T) {
+	tempFilename := TempFilename()
+	db, err := sql.Open("sqlite3", tempFilename)
+	if err != nil {
+		t.Fatal("Failed to open database:", err)
+	}
+	defer os.Remove(tempFilename)
+	defer db.Close()
+
+	_, err = db.Exec(`
+	create table foo (id integer, name, extra text);
+	`)
+	if err != nil {
+		t.Error("Failed to call db.Query:", err)
+	}
+
+	const text = "foo\x00bar"
+
+	_, err = db.Exec(`insert into foo(id, name, extra) values($1, $2, $2)`, 1, text)
+	if err != nil {
+		t.Error("Failed to call db.Exec:", err)
+	}
+
+	row := db.QueryRow(`select id, extra from foo where id = $1 and extra = $2`, 1, text)
+	if row == nil {
+		t.Error("Failed to call db.QueryRow")
+	}
+
+	var id int
+	var extra string
+	err = row.Scan(&id, &extra)
+	if err != nil {
+		t.Error("Failed to db.Scan:", err)
+	}
+	if id != 1 || extra != text {
+		t.Error("Failed to db.QueryRow: not matched results")
+	}
+}
+
+const CurrentTimeStamp = "2006-01-02 15:04:05"
+
+type TimeStamp struct{ *time.Time }
+
+func (t TimeStamp) Scan(value interface{}) error {
+	var err error
+	switch v := value.(type) {
+	case string:
+		*t.Time, err = time.Parse(CurrentTimeStamp, v)
+	case []byte:
+		*t.Time, err = time.Parse(CurrentTimeStamp, string(v))
+	default:
+		err = errors.New("invalid type for current_timestamp")
+	}
+	return err
+}
+
+func (t TimeStamp) Value() (driver.Value, error) {
+	return t.Time.Format(CurrentTimeStamp), nil
+}
+
+func TestDateTimeNow(t *testing.T) {
+	tempFilename := TempFilename()
+	db, err := sql.Open("sqlite3", tempFilename)
+	if err != nil {
+		t.Fatal("Failed to open database:", err)
+	}
+	defer db.Close()
+
+	var d time.Time
+	err = db.QueryRow("SELECT datetime('now')").Scan(TimeStamp{&d})
+	if err != nil {
+		t.Fatal("Failed to scan datetime:", err)
+	}
 }
