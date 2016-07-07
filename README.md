@@ -4,6 +4,7 @@ go-sqlcipher
 
 SQLCipher driver conforming to the built-in database/sql interface and using the latest sqlite3 code.
 
+
 which is
 `3.8.8.3 2015-02-25 13:29:11 9d6c1880fb75660bbabd693175579529785f8a6b`
 
@@ -39,6 +40,10 @@ This package can be installed with the go get command:
 
     go get github.com/xeodou/go-sqlcipher
 
+_go-sqlcipher_ is *cgo* package.
+If you want to build your app using go-sqlcipher, you need gcc.
+However, if you install _go-sqlcipher_ with `go install github.com/xeodou/go-sqlcipher`, you don't need gcc to build your app anymore.
+    
 Documentation
 -------------
 
@@ -50,9 +55,23 @@ FAQ
 ---
 
 The golang code is copy from [go-sqlite3](https://github.com/mattn/go-sqlite3)
-If you have some issue, you can maybe you can find from https://github.com/mattn/go-sqlite3/issues
+If you have some issue, maybe you can find from https://github.com/mattn/go-sqlite3/issues
 
 Here is some help from go-sqlite3 project.
+
+* Want to build go-sqlite3 with libsqlite3 on my linux.
+
+    Use `go build --tags "libsqlite3 linux"`
+
+* Want to build go-sqlite3 with libsqlite3 on OS X.
+
+    Install sqlite3 from homebrew: `brew install sqlite3`
+
+    Use `go build --tags "libsqlite3 darwin"`
+
+* Want to build go-sqlite3 with icu extension.
+
+   Use `go build --tags "icu"`
 
 * Can't build go-sqlite3 on windows 64bit.
 
@@ -64,7 +83,7 @@ Here is some help from go-sqlite3 project.
     > You can pass some arguments into the connection string, for example, a URI.
     > See: https://github.com/mattn/go-sqlite3/issues/39
 
-* Do you want cross compiling? mingw on Linux or Mac?
+* Do you want to cross compile? mingw on Linux or Mac?
 
     > See: https://github.com/mattn/go-sqlite3/issues/106
     > See also: http://www.limitlessfx.com/cross-compile-golang-app-for-windows-from-linux.html
@@ -87,6 +106,11 @@ sqlite3-binding.c, sqlite3-binding.h, sqlite3ext.h
 The -binding suffix was added to avoid build failures under gccgo.
 
 In this repository, those files are amalgamation code that copied from SQLCipher. The license of those codes are depend on the license of SQLCipher.
+
+In this repository, those files are an amalgamation of code that was copied from SQLite3. The license of that code is the same as the license of SQLite3.
+
+Original repository https://github.com/mattn/go-sqlite3 is under MIT.
+
 
 Author
 ------
