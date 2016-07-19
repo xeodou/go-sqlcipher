@@ -267,8 +267,6 @@ struct sqlite3_api_routines {
   void (*result_text64)(sqlite3_context*,const char*,sqlite3_uint64,
                          void(*)(void*), unsigned char);
   int (*strglob)(const char*,const char*);
-<<<<<<< HEAD
-=======
   /* Version 3.8.11 and later */
   sqlite3_value *(*value_dup)(const sqlite3_value*);
   void (*value_free)(sqlite3_value*);
@@ -283,7 +281,6 @@ struct sqlite3_api_routines {
   int (*db_cacheflush)(sqlite3*);
   /* Version 3.12.0 and later */
   int (*system_errno)(sqlite3*);
->>>>>>> mattn/master
 };
 
 /*
@@ -515,11 +512,6 @@ struct sqlite3_api_routines {
 #define sqlite3_result_blob64          sqlite3_api->result_blob64
 #define sqlite3_result_text64          sqlite3_api->result_text64
 #define sqlite3_strglob                sqlite3_api->strglob
-<<<<<<< HEAD
-#endif /* SQLITE_CORE */
-
-#ifndef SQLITE_CORE
-=======
 /* Version 3.8.11 and later */
 #define sqlite3_value_dup              sqlite3_api->value_dup
 #define sqlite3_value_free             sqlite3_api->value_free
@@ -537,7 +529,6 @@ struct sqlite3_api_routines {
 #endif /* !defined(SQLITE_CORE) && !defined(SQLITE_OMIT_LOAD_EXTENSION) */
 
 #if !defined(SQLITE_CORE) && !defined(SQLITE_OMIT_LOAD_EXTENSION)
->>>>>>> mattn/master
   /* This case when the file really is being compiled as a loadable
   ** extension */
 # define SQLITE_EXTENSION_INIT1     const sqlite3_api_routines *sqlite3_api=0;
