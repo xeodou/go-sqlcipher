@@ -5,6 +5,8 @@ build:
   # The steps that will be executed on build
   steps:
     # Lint the project
+    - install-packages:
+        packages: openssl
     - script:
         name: go lint
         code: |
