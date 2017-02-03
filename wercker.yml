@@ -6,7 +6,7 @@ build:
   steps:
     # Lint the project
     - install-packages:
-        packages: openssl
+        packages: libssl-dev
     - script:
         name: go lint
         code: |
