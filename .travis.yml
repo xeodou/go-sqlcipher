@@ -9,7 +9,6 @@ addons:
 
 env:
   - GOTAGS=
-  - GOTAGS=libsqlite3
   - GOTAGS=trace
   - GOTAGS=vtable
 go:
