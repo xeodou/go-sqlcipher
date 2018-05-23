@@ -9,6 +9,7 @@ package main
 import (
 	"database/sql"
 	"fmt"
+
 	_ "github.com/xeodou/go-sqlcipher"
 )
 
@@ -24,6 +25,7 @@ func main() {
 	if err != nil {
 		fmt.Println(err)
 	}
+
 	c := "CREATE TABLE IF NOT EXISTS `users` (`id` INTEGER PRIMARY KEY, `name` char, `password` chart, UNIQUE(`name`));"
 	_, err = db.Exec(c)
 	if err != nil {
