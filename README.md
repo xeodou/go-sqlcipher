@@ -1,6 +1,6 @@
 go-sqlcipher
 ==========
-[![wercker status](https://app.wercker.com/status/644cebafbb8dc7be796f0d45578a9a12/m "wercker status")](https://app.wercker.com/project/bykey/644cebafbb8dc7be796f0d45578a9a12)
+[![Build Status](https://travis-ci.org/xeodou/go-sqlcipher.svg?branch=master)](https://travis-ci.org/xeodou/go-sqlcipher)
 
 SQLCipher driver conforming to the built-in database/sql interface and using the latest sqlite3 code.
 
