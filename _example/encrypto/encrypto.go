@@ -14,7 +14,7 @@ import (
 )
 
 func main() {
-	db, err := sql.Open("sqlite3", "users.db?key=123456")
+	db, err := sql.Open("sqlite3", "users.db?_key=123456")
 	if err != nil {
 		fmt.Println(err)
 	}
