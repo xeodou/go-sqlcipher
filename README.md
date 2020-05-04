@@ -4,12 +4,20 @@ go-sqlcipher
 
 SQLCipher driver conforming to the built-in database/sql interface and using the latest sqlite3 code.
 
+[![GoDoc Reference](https://godoc.org/github.com/xeodou/go-sqlcipher?status.svg)](http://godoc.org/github.com/xeodou/go-sqlcipher)
+[![Build Status](https://travis-ci.org/xeodou/go-sqlcipher.svg?branch=master)](https://travis-ci.org/xeodou/go-sqlcipher)
+[![Coverage Status](https://coveralls.io/repos/xeodou/go-sqlcipher/badge.svg?branch=master)](https://coveralls.io/r/xeodou/go-sqlcipher?branch=master)
+[![Go Report Card](https://goreportcard.com/badge/github.com/xeodou/go-sqlcipher)](https://goreportcard.com/report/github.com/xeodou/go-sqlcipher)
+
+NOTE: v2.0.1 or higher is unfortunatal release. So there are no big changes. And does not provide v2 feature.
+
+# Description
 
 which is
-`3.26.0`
+`3.31.0`
 
 Working with sqlcipher version which is
-`4.0.1`
+`4.3.0`
 
 It's wrapper with
  * [go-sqlite3](https://github.com/mattn/go-sqlite3) sqlite3 driver for go that using database/sql.
@@ -34,15 +42,21 @@ To upgrade SQLCipher from 3.x to 4.x, please take a look of:
 
 ### Overview
 
+- [go-sqlite3](#go-sqlite3)
+- [Description](#description)
+    - [Overview](#overview)
 - [Installation](#installation)
 - [API Reference](#api-reference)
 - [Connection String](#connection-string)
+  - [DSN Examples](#dsn-examples)
 - [Features](#features)
+    - [Usage](#usage)
+    - [Feature / Extension List](#feature--extension-list)
 - [Compilation](#compilation)
   - [Android](#android)
-  - [ARM](#arm)
-  - [Cross Compile](#cross-compile)
-  - [Google Cloud Platform](#google-cloud-platform)
+- [ARM](#arm)
+- [Cross Compile](#cross-compile)
+- [Google Cloud Platform](#google-cloud-platform)
   - [Linux](#linux)
     - [Alpine](#alpine)
     - [Fedora](#fedora)
@@ -52,11 +66,22 @@ To upgrade SQLCipher from 3.x to 4.x, please take a look of:
   - [Errors](#errors)
 - [User Authentication](#user-authentication)
   - [Compile](#compile)
-  - [Usage](#usage)
+  - [Usage](#usage-1)
+    - [Create protected database](#create-protected-database)
+    - [Password Encoding](#password-encoding)
+      - [Available Encoders](#available-encoders)
+    - [Restrictions](#restrictions)
+    - [Support](#support)
+    - [User Management](#user-management)
+      - [SQL](#sql)
+        - [Examples](#examples)
+      - [*SQLiteConn](#sqliteconn)
+    - [Attached database](#attached-database)
 - [Extensions](#extensions)
   - [Spatialite](#spatialite)
 - [FAQ](#faq)
 - [License](#license)
+- [Author](#author)
 
 # Installation
 
@@ -134,6 +159,9 @@ This package allows additional configuration of features available within SQLite
 
 [Click here for more information about build tags / constraints.](https://golang.org/pkg/go/build/#hdr-Build_Constraints)
 
+**Please notice**
+The `userAuthentication` extention is not support the library, since the SQLCipher is already let you create the encrypted database.
+
 ### Usage
 
 If you wish to build this library with additional extensions / features.
@@ -145,7 +173,7 @@ go build --tags "<FEATURE>"
 
 If you want to build the project without the `libcrypto`, you could specific the openssl library by using the command.
 ```bash
-CGO_ENABLE=0 CGO_LDFLAGS="-L/usr/local/opt/openssl/lib" CGO_CPPFLAGS="-I/usr/local/opt/openssl/include" go build build _example/encrypto/encrypto.go
+CGO_ENABLE=1 CGO_LDFLAGS="-L/usr/local/opt/openssl/lib" CGO_CPPFLAGS="-I/usr/local/opt/openssl/include" go build _example/encrypto/encrypto.go
 ```
 
 For available features see the extension list.
@@ -172,6 +200,7 @@ go build --tags "icu json1 fts5 secure_delete"
 |  International Components for Unicode | sqlite_icu | This option causes the International Components for Unicode or "ICU" extension to SQLite to be added to the build |
 | Introspect PRAGMAS | sqlite_introspect | This option adds some extra PRAGMA statements. <ul><li>PRAGMA function_list</li><li>PRAGMA module_list</li><li>PRAGMA pragma_list</li></ul> |
 | JSON SQL Functions | sqlite_json | When this option is defined in the amalgamation, the JSON SQL functions are added to the build automatically |
+| Pre Update Hook | sqlite_preupdate_hook | Registers a callback function that is invoked prior to each INSERT, UPDATE, and DELETE operation on a database table. |
 | Secure Delete | sqlite_secure_delete | This compile-time option changes the default setting of the secure_delete pragma.<br><br>When this option is not used, secure_delete defaults to off. When this option is present, secure_delete defaults to on.<br><br>The secure_delete setting causes deleted content to be overwritten with zeros. There is a small performance penalty since additional I/O must occur.<br><br>On the other hand, secure_delete can prevent fragments of sensitive information from lingering in unused parts of the database file after it has been deleted. See the documentation on the secure_delete pragma for additional information |
 | Secure Delete (FAST) | sqlite_secure_delete_fast | For more information see [PRAGMA secure_delete](https://www.sqlite.org/pragma.html#pragma_secure_delete) |
 | Tracing / Debug | sqlite_trace | Activate trace functions |
@@ -270,7 +299,7 @@ Required dependency
 brew install sqlite3
 ```
 
-For OSX there is an additional package install which is required if you whish to build the `icu` extension.
+For OSX there is an additional package install which is required if you wish to build the `icu` extension.
 
 This additional package can be installed with `homebrew`.
 
@@ -460,6 +489,16 @@ If you want your own extension to be listed here or you want to add a reference 
 Spatialite is available as an extension to SQLite, and can be used in combination with this repository.
 For an example see [shaxbee/go-spatialite](https://github.com/shaxbee/go-spatialite).
 
+## extension-functions.c from SQLite3 Contrib
+
+extension-functions.c is available as an extension to SQLite, and provides the following functions:
+
+- Math: acos, asin, atan, atn2, atan2, acosh, asinh, atanh, difference, degrees, radians, cos, sin, tan, cot, cosh, sinh, tanh, coth, exp, log, log10, power, sign, sqrt, square, ceil, floor, pi.
+- String: replicate, charindex, leftstr, rightstr, ltrim, rtrim, trim, replace, reverse, proper, padl, padr, padc, strfilter.
+- Aggregate: stdev, variance, mode, median, lower_quartile, upper_quartile
+
+For an example see [dinedal/go-sqlite3-extension-functions](https://github.com/dinedal/go-sqlite3-extension-functions).
+
 # FAQ
 
 - Getting insert error while query is opened.
@@ -484,15 +523,19 @@ For an example see [shaxbee/go-spatialite](https://github.com/shaxbee/go-spatial
 
     Why is it racy if I use a `sql.Open("sqlite3", ":memory:")` database?
 
-    Each connection to :memory: opens a brand new in-memory sql database, so if
+    Each connection to `":memory:"` opens a brand new in-memory sql database, so if
     the stdlib's sql engine happens to open another connection and you've only
-    specified ":memory:", that connection will see a brand new database. A
-    workaround is to use "file::memory:?mode=memory&cache=shared". Every
+    specified `":memory:"`, that connection will see a brand new database. A
+    workaround is to use `"file::memory:?cache=shared"` (or `"file:foobar?mode=memory&cache=shared"`). Every
     connection to this string will point to the same in-memory database.
+
+    Note that if the last database connection in the pool closes, the in-memory database is deleted. Make sure the [max idle connection limit](https://golang.org/pkg/database/sql/#DB.SetMaxIdleConns) is > 0, and the [connection lifetime](https://golang.org/pkg/database/sql/#DB.SetConnMaxLifetime) is infinite.
 
     For more information see
     * [#204](https://github.com/mattn/go-sqlite3/issues/204)
     * [#511](https://github.com/mattn/go-sqlite3/issues/511)
+    * https://www.sqlite.org/sharedcache.html#shared_cache_and_in_memory_databases
+    * https://www.sqlite.org/inmemorydb.html#sharedmemdb
 
 - Reading from database with large amount of goroutines fails on OSX.
 
@@ -507,12 +550,56 @@ For an example see [shaxbee/go-spatialite](https://github.com/shaxbee/go-spatial
 
     You need to implement the feature or call the sqlite3 cli.
 
-* Print some waring messages like `warning: 'RAND_add' is deprecated: first deprecated in OS X 10.7`
+    More information see [#305](https://github.com/mattn/go-sqlite3/issues/305)
+
+- Error: `database is locked`
 
     You can ignore these messages.
 
-License
--------
+    Example:
+    ```go
+    db, err := sql.Open("sqlite3", "file:locked.sqlite?cache=shared")
+    ```
+
+    Second please set the database connections of the SQL package to 1.
+
+    ```go
+    db.SetMaxOpenConns(1)
+    ```
+
+    More information see [#209](https://github.com/mattn/go-sqlite3/issues/209)
+
+## Contributors
+
+### Code Contributors
+
+This project exists thanks to all the people who contribute. [[Contribute](CONTRIBUTING.md)].
+<a href="https://github.com/mattn/go-sqlite3/graphs/contributors"><img src="https://opencollective.com/mattn-go-sqlite3/contributors.svg?width=890&button=false" /></a>
+
+### Financial Contributors
+
+Become a financial contributor and help us sustain our community. [[Contribute](https://opencollective.com/mattn-go-sqlite3/contribute)]
+
+#### Individuals
+
+<a href="https://opencollective.com/mattn-go-sqlite3"><img src="https://opencollective.com/mattn-go-sqlite3/individuals.svg?width=890"></a>
+
+#### Organizations
+
+Support this project with your organization. Your logo will show up here with a link to your website. [[Contribute](https://opencollective.com/mattn-go-sqlite3/contribute)]
+
+<a href="https://opencollective.com/mattn-go-sqlite3/organization/0/website"><img src="https://opencollective.com/mattn-go-sqlite3/organization/0/avatar.svg"></a>
+<a href="https://opencollective.com/mattn-go-sqlite3/organization/1/website"><img src="https://opencollective.com/mattn-go-sqlite3/organization/1/avatar.svg"></a>
+<a href="https://opencollective.com/mattn-go-sqlite3/organization/2/website"><img src="https://opencollective.com/mattn-go-sqlite3/organization/2/avatar.svg"></a>
+<a href="https://opencollective.com/mattn-go-sqlite3/organization/3/website"><img src="https://opencollective.com/mattn-go-sqlite3/organization/3/avatar.svg"></a>
+<a href="https://opencollective.com/mattn-go-sqlite3/organization/4/website"><img src="https://opencollective.com/mattn-go-sqlite3/organization/4/avatar.svg"></a>
+<a href="https://opencollective.com/mattn-go-sqlite3/organization/5/website"><img src="https://opencollective.com/mattn-go-sqlite3/organization/5/avatar.svg"></a>
+<a href="https://opencollective.com/mattn-go-sqlite3/organization/6/website"><img src="https://opencollective.com/mattn-go-sqlite3/organization/6/avatar.svg"></a>
+<a href="https://opencollective.com/mattn-go-sqlite3/organization/7/website"><img src="https://opencollective.com/mattn-go-sqlite3/organization/7/avatar.svg"></a>
+<a href="https://opencollective.com/mattn-go-sqlite3/organization/8/website"><img src="https://opencollective.com/mattn-go-sqlite3/organization/8/avatar.svg"></a>
+<a href="https://opencollective.com/mattn-go-sqlite3/organization/9/website"><img src="https://opencollective.com/mattn-go-sqlite3/organization/9/avatar.svg"></a>
+
+# License
 
 MIT:
 
