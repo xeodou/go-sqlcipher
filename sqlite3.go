@@ -1400,7 +1400,7 @@ func (d *SQLiteDriver) Open(dsn string) (driver.Conn, error) {
 	// Encrypt Keys
 	// The key pragma should be always called first
 	if encryptKey != "" {
-		if err := exec(fmt.Sprintf("PRAGMA key = %s;", encryptKey)); err != nil {
+		if err := exec(fmt.Sprintf(`PRAGMA key = "%s";`, encryptKey)); err != nil {
 			C.sqlite3_close_v2(db)
 			return nil, err
 		}
