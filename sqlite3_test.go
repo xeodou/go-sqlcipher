@@ -1207,7 +1207,7 @@ func TestEncryptoDatabase(t *testing.T) {
 	defer os.Remove(tempFilename)
 	defer db.Close()
 
-	_, err = db.Exec("PRAGMA key = 'password';")
+	_, err = db.Exec(`PRAGMA key = "x'123ABC'";`)
 	if err != nil {
 		t.Error("Failed to set encrypto key")
 	}
@@ -1239,7 +1239,7 @@ func TestEncryptoDatabase(t *testing.T) {
 		t.Error("Failed to db.QueryRow: not matched results")
 	}
 	db.Close()
-	db, err = sql.Open("sqlite3", tempFilename+"?_key=not_password")
+	db, err = sql.Open("sqlite3", tempFilename+"?_key=x'123000'")
 	if err != nil {
 		t.Fatal("Failed to open database:", err)
 	}
@@ -1249,7 +1249,7 @@ func TestEncryptoDatabase(t *testing.T) {
 		t.Error("Failed to encrypto database")
 	}
 	db.Close()
-	db, err = sql.Open("sqlite3", tempFilename+"?_key=password")
+	db, err = sql.Open("sqlite3", tempFilename+"?_key=x'123ABC'")
 	if err != nil {
 		t.Fatal("Failed to open database:", err)
 	}
