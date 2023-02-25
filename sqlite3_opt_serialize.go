@@ -1,4 +1,3 @@
-//go:build !libsqlite3 || sqlite_serialize
 // +build !libsqlite3 sqlite_serialize
 
 package sqlite3
@@ -16,12 +15,9 @@ import "C"
 
 import (
 	"fmt"
+	"math"
 	"reflect"
 	"unsafe"
-)
-
-const (
-	MaxInt = 1<<(2^32-1) - 1
 )
 
 // Serialize returns a byte slice that is a serialization of the database.
@@ -42,7 +38,7 @@ func (c *SQLiteConn) Serialize(schema string) ([]byte, error) {
 	}
 	defer C.sqlite3_free(unsafe.Pointer(ptr))
 
-	if sz > C.sqlite3_int64(MaxInt) {
+	if sz > C.sqlite3_int64(math.MaxInt) {
 		return nil, fmt.Errorf("serialized database is too large (%d bytes)", sz)
 	}
 
