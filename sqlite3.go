@@ -1016,6 +1016,7 @@ func (d *SQLiteDriver) Open(dsn string) (driver.Conn, error) {
 
 	// PRAGMA's
 	encryptKey := ""
+	cipher_compatibility := -1
 	autoVacuum := -1
 	busyTimeout := 5000
 	caseSensitiveLike := -1
@@ -1040,6 +1041,15 @@ func (d *SQLiteDriver) Open(dsn string) (driver.Conn, error) {
 		// _key
 		if val := params.Get("_key"); val != "" {
 			encryptKey = val
+		}
+
+		// _cipher_compatibility
+		if val := params.Get("_cipher_compatibility"); val != "" {
+			iv, err := strconv.ParseInt(val, 10, 64)
+			if err != nil {
+				return nil, fmt.Errorf("Invalid _cipher_compatibility: %v: %v", val, err)
+			}
+			cipher_compatibility = int(iv)
 		}
 
 		// Authentication
@@ -1401,6 +1411,15 @@ func (d *SQLiteDriver) Open(dsn string) (driver.Conn, error) {
 	// The key pragma should be always called first
 	if encryptKey != "" {
 		if err := exec(fmt.Sprintf(`PRAGMA key = "%s";`, encryptKey)); err != nil {
+			C.sqlite3_close_v2(db)
+			return nil, err
+		}
+	}
+
+	// Cipher Compatibility
+	// The cipher_compatibility pragma should be called immediately after if provided
+	if cipher_compatibility > -1 {
+		if err := exec(fmt.Sprintf("PRAGMA cipher_compatibility = %d;", cipher_compatibility)); err != nil {
 			C.sqlite3_close_v2(db)
 			return nil, err
 		}
