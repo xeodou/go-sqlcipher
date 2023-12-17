@@ -1,15 +1,9 @@
 go-sqlite3
 ==========
 
-[![Go Reference](https://pkg.go.dev/badge/github.com/mattn/go-sqlite3.svg)](https://pkg.go.dev/github.com/mattn/go-sqlite3)
-[![GitHub Actions](https://github.com/mattn/go-sqlite3/workflows/Go/badge.svg)](https://github.com/mattn/go-sqlite3/actions?query=workflow%3AGo)
-[![Financial Contributors on Open Collective](https://opencollective.com/mattn-go-sqlite3/all/badge.svg?label=financial+contributors)](https://opencollective.com/mattn-go-sqlite3) 
-[![codecov](https://codecov.io/gh/mattn/go-sqlite3/branch/master/graph/badge.svg)](https://codecov.io/gh/mattn/go-sqlite3)
-[![Go Report Card](https://goreportcard.com/badge/github.com/mattn/go-sqlite3)](https://goreportcard.com/report/github.com/mattn/go-sqlite3)
-
-Latest stable version is v1.14 or later, not v2.
-
-~~**NOTE:** The increase to v2 was an accident. There were no major changes or features.~~
+[![Go Reference](https://pkg.go.dev/badge/github.com/ValentinMontmirail/go-sqlcipher.svg)](https://pkg.go.dev/github.com/ValentinMontmirail/go-sqlcipher)
+[![Github Action](https://github.com/ValentinMontmirail/go-sqlcipher/actions/workflows/go.yaml/badge.svg)](https://github.com/ValentinMontmirail/go-sqlcipher/actions/workflows/go.yaml)
+[![Go Report Card](https://goreportcard.com/badge/github.com/ValentinMontmirail/go-sqlcipher)](https://goreportcard.com/report/github.com/ValentinMontmirail/go-sqlcipher)
 
 # Description
 
@@ -18,6 +12,8 @@ A sqlite3 driver that conforms to the built-in database/sql interface.
 Supported Golang version: See [.github/workflows/go.yaml](./.github/workflows/go.yaml).
 
 This package follows the official [Golang Release Policy](https://golang.org/doc/devel/release.html#policy).
+
+Current supported version of SQLite 3: `3.45.0`
 
 ### Overview
 
@@ -35,12 +31,13 @@ This package follows the official [Golang Release Policy](https://golang.org/doc
   - [Android](#android)
 - [ARM](#arm)
 - [Cross Compile](#cross-compile)
+  - [Cross Compiling from macOS](#cross-compiling-from-macos)
 - [Google Cloud Platform](#google-cloud-platform)
   - [Linux](#linux)
     - [Alpine](#alpine)
     - [Fedora](#fedora)
     - [Ubuntu](#ubuntu)
-  - [macOS](#mac-osx)
+  - [macOS](#macos)
   - [Windows](#windows)
   - [Errors](#errors)
 - [User Authentication](#user-authentication)
@@ -54,11 +51,11 @@ This package follows the official [Golang Release Policy](https://golang.org/doc
     - [User Management](#user-management)
       - [SQL](#sql)
         - [Examples](#examples)
-      - [*SQLiteConn](#sqliteconn)
+      - [\*SQLiteConn](#sqliteconn)
     - [Attached database](#attached-database)
 - [Extensions](#extensions)
   - [Spatialite](#spatialite)
-- [FAQ](#faq)
+  - [extension-functions.c from SQLite3 Contrib](#extension-functionsc-from-sqlite3-contrib)
 - [License](#license)
 - [Author](#author)
 
@@ -66,17 +63,17 @@ This package follows the official [Golang Release Policy](https://golang.org/doc
 
 This package can be installed with the `go get` command:
 
-    go get github.com/mattn/go-sqlite3
+    go get github.com/ValentinMontmirail/go-sqlcipher
 
 _go-sqlite3_ is *cgo* package.
 If you want to build your app using go-sqlite3, you need gcc.
-However, after you have built and installed _go-sqlite3_ with `go install github.com/mattn/go-sqlite3` (which requires gcc), you can build your app without relying on gcc in future.
+However, after you have built and installed _go-sqlite3_ with `go install github.com/ValentinMontmirail/go-sqlcipher` (which requires gcc), you can build your app without relying on gcc in future.
 
 ***Important: because this is a `CGO` enabled package, you are required to set the environment variable `CGO_ENABLED=1` and have a `gcc` compile present within your path.***
 
 # API Reference
 
-API documentation can be found [here](http://godoc.org/github.com/mattn/go-sqlite3).
+API documentation can be found [here](http://godoc.org/github.com/ValentinMontmirail/go-sqlcipher).
 
 Examples can be found under the [examples](./_example) directory.
 
@@ -180,7 +177,7 @@ go build -tags "icu json1 fts5 secure_delete"
 | Secure Delete (FAST) | sqlite_secure_delete_fast | For more information see [PRAGMA secure_delete](https://www.sqlite.org/pragma.html#pragma_secure_delete) |
 | Tracing / Debug | sqlite_trace | Activate trace functions |
 | User Authentication | sqlite_userauth | SQLite User Authentication see [User Authentication](#user-authentication) for more information. |
-| Virtual Tables | sqlite_vtable | SQLite Virtual Tables see [SQLite Official VTABLE Documentation](https://www.sqlite.org/vtab.html) for more information, and a [full example here](https://github.com/mattn/go-sqlite3/tree/master/_example/vtable) |
+| Virtual Tables | sqlite_vtable | SQLite Virtual Tables see [SQLite Official VTABLE Documentation](https://www.sqlite.org/vtab.html) for more information, and a [full example here](https://github.com/ValentinMontmirail/go-sqlcipher/tree/master/_example/vtable) |
 
 # Compilation
 
@@ -197,7 +194,7 @@ Compile with:
 go build -tags "android"
 ```
 
-For more information see [#201](https://github.com/mattn/go-sqlite3/issues/201)
+For more information see [#201](https://github.com/ValentinMontmirail/go-sqlcipher/issues/201)
 
 # ARM
 
@@ -210,8 +207,8 @@ env CC=arm-linux-gnueabihf-gcc CXX=arm-linux-gnueabihf-g++ \
 ```
 
 Additional information:
-- [#242](https://github.com/mattn/go-sqlite3/issues/242)
-- [#504](https://github.com/mattn/go-sqlite3/issues/504)
+- [#242](https://github.com/ValentinMontmirail/go-sqlcipher/issues/242)
+- [#504](https://github.com/ValentinMontmirail/go-sqlcipher/issues/504)
 
 # Cross Compile
 
@@ -310,8 +307,8 @@ go build -tags "libsqlite3 darwin arm64"
 ```
 
 Additional information:
-- [#206](https://github.com/mattn/go-sqlite3/issues/206)
-- [#404](https://github.com/mattn/go-sqlite3/issues/404)
+- [#206](https://github.com/ValentinMontmirail/go-sqlcipher/issues/206)
+- [#404](https://github.com/ValentinMontmirail/go-sqlcipher/issues/404)
 
 ## Windows
 
@@ -337,21 +334,21 @@ For example the TDM-GCC Toolchain can be found [here](https://jmeubank.github.io
     go build -ldflags '-extldflags=-fno-PIC'
     ```
 
-    More details see [#120](https://github.com/mattn/go-sqlite3/issues/120)
+    More details see [#120](https://github.com/ValentinMontmirail/go-sqlcipher/issues/120)
 
 - Can't build go-sqlite3 on windows 64bit.
 
     > Probably, you are using go 1.0, go1.0 has a problem when it comes to compiling/linking on windows 64bit.
-    > See: [#27](https://github.com/mattn/go-sqlite3/issues/27)
+    > See: [#27](https://github.com/ValentinMontmirail/go-sqlcipher/issues/27)
 
-- `go get github.com/mattn/go-sqlite3` throws compilation error.
+- `go get github.com/ValentinMontmirail/go-sqlcipher` throws compilation error.
 
     `gcc` throws: `internal compiler error`
 
     Remove the download repository from your disk and try re-install with:
 
     ```bash
-    go install github.com/mattn/go-sqlite3
+    go install github.com/ValentinMontmirail/go-sqlcipher
     ```
 
 # User Authentication
@@ -484,108 +481,6 @@ extension-functions.c is available as an extension to SQLite, and provides the f
 
 For an example, see [dinedal/go-sqlite3-extension-functions](https://github.com/dinedal/go-sqlite3-extension-functions).
 
-# FAQ
-
-- Getting insert error while query is opened.
-
-    > You can pass some arguments into the connection string, for example, a URI.
-    > See: [#39](https://github.com/mattn/go-sqlite3/issues/39)
-
-- Do you want to cross compile? mingw on Linux or Mac?
-
-    > See: [#106](https://github.com/mattn/go-sqlite3/issues/106)
-    > See also: http://www.limitlessfx.com/cross-compile-golang-app-for-windows-from-linux.html
-
-- Want to get time.Time with current locale
-
-    Use `_loc=auto` in SQLite3 filename schema like `file:foo.db?_loc=auto`.
-
-- Can I use this in multiple routines concurrently?
-
-    Yes for readonly. But not for writable. See [#50](https://github.com/mattn/go-sqlite3/issues/50), [#51](https://github.com/mattn/go-sqlite3/issues/51), [#209](https://github.com/mattn/go-sqlite3/issues/209), [#274](https://github.com/mattn/go-sqlite3/issues/274).
-
-- Why I'm getting `no such table` error?
-
-    Why is it racy if I use a `sql.Open("sqlite3", ":memory:")` database?
-
-    Each connection to `":memory:"` opens a brand new in-memory sql database, so if
-    the stdlib's sql engine happens to open another connection and you've only
-    specified `":memory:"`, that connection will see a brand new database. A
-    workaround is to use `"file::memory:?cache=shared"` (or `"file:foobar?mode=memory&cache=shared"`). Every
-    connection to this string will point to the same in-memory database.
-    
-    Note that if the last database connection in the pool closes, the in-memory database is deleted. Make sure the [max idle connection limit](https://golang.org/pkg/database/sql/#DB.SetMaxIdleConns) is > 0, and the [connection lifetime](https://golang.org/pkg/database/sql/#DB.SetConnMaxLifetime) is infinite.
-    
-    For more information see:
-    * [#204](https://github.com/mattn/go-sqlite3/issues/204)
-    * [#511](https://github.com/mattn/go-sqlite3/issues/511)
-    * https://www.sqlite.org/sharedcache.html#shared_cache_and_in_memory_databases
-    * https://www.sqlite.org/inmemorydb.html#sharedmemdb
-
-- Reading from database with large amount of goroutines fails on OSX.
-
-    OS X limits OS-wide to not have more than 1000 files open simultaneously by default.
-
-    For more information, see [#289](https://github.com/mattn/go-sqlite3/issues/289)
-
-- Trying to execute a `.` (dot) command throws an error.
-
-    Error: `Error: near ".": syntax error`
-    Dot command are part of SQLite3 CLI, not of this library.
-
-    You need to implement the feature or call the sqlite3 cli.
-
-    More information see [#305](https://github.com/mattn/go-sqlite3/issues/305).
-
-- Error: `database is locked`
-
-    When you get a database is locked, please use the following options.
-
-    Add to DSN: `cache=shared`
-
-    Example:
-    ```go
-    db, err := sql.Open("sqlite3", "file:locked.sqlite?cache=shared")
-    ```
-
-    Next, please set the database connections of the SQL package to 1:
-    
-    ```go
-    db.SetMaxOpenConns(1)
-    ```
-
-    For more information, see [#209](https://github.com/mattn/go-sqlite3/issues/209).
-
-## Contributors
-
-### Code Contributors
-
-This project exists thanks to all the people who [[contribute](CONTRIBUTING.md)].
-<a href="https://github.com/mattn/go-sqlite3/graphs/contributors"><img src="https://opencollective.com/mattn-go-sqlite3/contributors.svg?width=890&button=false" /></a>
-
-### Financial Contributors
-
-Become a financial contributor and help us sustain our community. [[Contribute here](https://opencollective.com/mattn-go-sqlite3/contribute)].
-
-#### Individuals
-
-<a href="https://opencollective.com/mattn-go-sqlite3"><img src="https://opencollective.com/mattn-go-sqlite3/individuals.svg?width=890"></a>
-
-#### Organizations
-
-Support this project with your organization. Your logo will show up here with a link to your website. [[Contribute](https://opencollective.com/mattn-go-sqlite3/contribute)]
-
-<a href="https://opencollective.com/mattn-go-sqlite3/organization/0/website"><img src="https://opencollective.com/mattn-go-sqlite3/organization/0/avatar.svg"></a>
-<a href="https://opencollective.com/mattn-go-sqlite3/organization/1/website"><img src="https://opencollective.com/mattn-go-sqlite3/organization/1/avatar.svg"></a>
-<a href="https://opencollective.com/mattn-go-sqlite3/organization/2/website"><img src="https://opencollective.com/mattn-go-sqlite3/organization/2/avatar.svg"></a>
-<a href="https://opencollective.com/mattn-go-sqlite3/organization/3/website"><img src="https://opencollective.com/mattn-go-sqlite3/organization/3/avatar.svg"></a>
-<a href="https://opencollective.com/mattn-go-sqlite3/organization/4/website"><img src="https://opencollective.com/mattn-go-sqlite3/organization/4/avatar.svg"></a>
-<a href="https://opencollective.com/mattn-go-sqlite3/organization/5/website"><img src="https://opencollective.com/mattn-go-sqlite3/organization/5/avatar.svg"></a>
-<a href="https://opencollective.com/mattn-go-sqlite3/organization/6/website"><img src="https://opencollective.com/mattn-go-sqlite3/organization/6/avatar.svg"></a>
-<a href="https://opencollective.com/mattn-go-sqlite3/organization/7/website"><img src="https://opencollective.com/mattn-go-sqlite3/organization/7/avatar.svg"></a>
-<a href="https://opencollective.com/mattn-go-sqlite3/organization/8/website"><img src="https://opencollective.com/mattn-go-sqlite3/organization/8/avatar.svg"></a>
-<a href="https://opencollective.com/mattn-go-sqlite3/organization/9/website"><img src="https://opencollective.com/mattn-go-sqlite3/organization/9/avatar.svg"></a>
-
 # License
 
 MIT: http://mattn.mit-license.org/2018
@@ -599,5 +494,5 @@ In this repository, those files are an amalgamation of code that was copied from
 # Author
 
 Yasuhiro Matsumoto (a.k.a mattn)
-
 G.J.R. Timmer
+Valentin Montmirail
