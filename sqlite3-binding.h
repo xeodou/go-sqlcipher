@@ -13359,7 +13359,6 @@ struct fts5_api {
 ** user-auth.txt file in the same source directory as this file for
 ** additional information.
 */
-#ifdef SQLITE_USER_AUTHENTICATION
 
 #ifdef __cplusplus
 extern "C" {
@@ -13433,4 +13432,3 @@ int sqlite3_user_delete(
 }  /* end of the 'extern "C"' block */
 #endif
 
-#endif /* SQLITE_USER_AUTHENTICATION */
