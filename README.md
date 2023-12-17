@@ -3,6 +3,7 @@ go-sqlite3
 
 [![Go Reference](https://pkg.go.dev/badge/github.com/ValentinMontmirail/go-sqlcipher.svg)](https://pkg.go.dev/github.com/ValentinMontmirail/go-sqlcipher)
 [![Github Action](https://github.com/ValentinMontmirail/go-sqlcipher/actions/workflows/go.yaml/badge.svg)](https://github.com/ValentinMontmirail/go-sqlcipher/actions/workflows/go.yaml)
+[![Coverage Status](https://codecov.io/gh/ValentinMontmirail/go-sqlcipher/graph/badge.svg?token=6FK2UKVH2X)](https://codecov.io/gh/ValentinMontmirail/go-sqlcipher)
 [![Go Report Card](https://goreportcard.com/badge/github.com/ValentinMontmirail/go-sqlcipher)](https://goreportcard.com/report/github.com/ValentinMontmirail/go-sqlcipher)
 
 # Description
