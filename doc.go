@@ -5,7 +5,7 @@ This works as a driver for database/sql.
 
 Installation
 
-	go get github.com/mattn/go-sqlite3
+	go get github.com/ValentinMontmirail/go-sqlcipher
 
 # Supported Types
 
